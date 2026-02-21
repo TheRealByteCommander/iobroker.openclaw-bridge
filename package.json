@@ -1,0 +1,22 @@
+{
+  "name": "iobroker.openclaw-bridge",
+  "version": "0.1.0",
+  "description": "ioBroker adapter bridge for OpenClaw access",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "lint": "echo 'add linting later'",
+    "test": "echo 'no tests yet' && exit 0"
+  },
+  "keywords": [
+    "iobroker",
+    "openclaw",
+    "adapter",
+    "automation"
+  ],
+  "author": "Byte Commander",
+  "license": "MIT",
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.2.3"
+  }
+}

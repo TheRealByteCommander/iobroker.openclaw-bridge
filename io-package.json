@@ -1,0 +1,75 @@
+{
+  "common": {
+    "name": "openclaw-bridge",
+    "version": "0.1.0",
+    "news": {
+      "0.1.0": {
+        "en": "Initial MVP bridge for ioBroker state read/write from OpenClaw workflows",
+        "de": "Initiales MVP-Bridge für ioBroker State-Read/Write aus OpenClaw-Workflows"
+      }
+    },
+    "titleLang": {
+      "en": "OpenClaw Bridge",
+      "de": "OpenClaw Bridge"
+    },
+    "desc": {
+      "en": "Bridge adapter exposing command and result states for external assistants",
+      "de": "Bridge-Adapter mit Command- und Result-States für externe Assistenten"
+    },
+    "authors": [
+      "Byte Commander"
+    ],
+    "keywords": [
+      "openclaw",
+      "bridge",
+      "assistant"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "type": "misc-data",
+    "icon": "openclaw-bridge.png",
+    "enabled": true,
+    "extIcon": "",
+    "readme": "https://github.com/TheRealByteCommander/ioBroker/blob/master/README.md",
+    "loglevel": "info",
+    "messagebox": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "compact": true,
+    "adminUI": {
+      "config": "none"
+    }
+  },
+  "native": {
+    "allowedPrefixes": "javascript.0,0_userdata.0"
+  },
+  "objects": [
+    {
+      "_id": "control.command",
+      "type": "state",
+      "common": {
+        "name": "JSON command",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": true,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "control.lastResult",
+      "type": "state",
+      "common": {
+        "name": "Last command result",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    }
+  ]
+}
