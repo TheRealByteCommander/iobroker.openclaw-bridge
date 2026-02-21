@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "news": {
+      "0.2.0": {
+        "en": "Add request correlation, structured errors, action whitelist, ACL checks, timeout handling, audit metrics and batch getStates",
+        "de": "Request-Korrelation, strukturierte Fehler, Action-Whitelist, ACL-Prüfungen, Timeout-Handling, Audit-Metriken und batch getStates ergänzt"
+      },
       "0.1.0": {
         "en": "Initial MVP bridge for ioBroker state read/write from OpenClaw workflows",
         "de": "Initiales MVP-Bridge für ioBroker State-Read/Write aus OpenClaw-Workflows"
@@ -42,7 +46,10 @@
     }
   },
   "native": {
-    "allowedPrefixes": "javascript.0,0_userdata.0"
+    "allowedPrefixes": "javascript.0,0_userdata.0",
+    "allowedActions": "getState,setState,listStates,getStates,ping",
+    "commandTimeoutMs": 5000,
+    "setStateAckAllowed": true
   },
   "objects": [
     {
@@ -65,6 +72,132 @@
         "name": "Last command result",
         "type": "string",
         "role": "json",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "responses",
+      "type": "channel",
+      "common": {
+        "name": "Per-request responses"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastRequestId",
+      "type": "state",
+      "common": {
+        "name": "Last request ID",
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastAction",
+      "type": "state",
+      "common": {
+        "name": "Last processed action",
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastDurationMs",
+      "type": "state",
+      "common": {
+        "name": "Last command duration in ms",
+        "type": "number",
+        "role": "value.interval",
+        "unit": "ms",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastError",
+      "type": "state",
+      "common": {
+        "name": "Last error",
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.totalCount",
+      "type": "state",
+      "common": {
+        "name": "Total processed commands",
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.successCount",
+      "type": "state",
+      "common": {
+        "name": "Successful commands",
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.failureCount",
+      "type": "state",
+      "common": {
+        "name": "Failed commands",
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.timeoutCount",
+      "type": "state",
+      "common": {
+        "name": "Timed-out commands",
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.lastUpdated",
+      "type": "state",
+      "common": {
+        "name": "Last update timestamp",
+        "type": "string",
+        "role": "value.datetime",
         "read": true,
         "write": false,
         "def": ""
