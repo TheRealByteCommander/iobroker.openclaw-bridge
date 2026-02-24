@@ -28,7 +28,7 @@ Produktionsnahe Interface-Schicht zwischen OpenClaw (Conversational Agent) und i
 ```json
 {
   "requestId": "optional",
-  "action": "getState | setState | listStates | getStates | ping | handleIntent | executePlan | emitContextEvent | handlePvSurplus"
+  "action": "getState | setState | listStates | getStates | ping | handleIntent | executePlan | validatePlan | emitContextEvent | getContextEvents | handlePvSurplus"
 }
 ```
 
@@ -80,6 +80,14 @@ Schreibt strukturierte Kontext-/Habit-Events.
 ### `executePlan`
 
 Führt Plan-Operationen aus (`setState`). Kritische IDs benötigen explizite Bestätigung.
+
+### `validatePlan`
+
+Prüft Operationen vor der Ausführung (ACL, kritische IDs, Bestätigungsbedarf) und liefert ein strukturiertes Ergebnis für Dry-Run/Preview.
+
+### `getContextEvents`
+
+Liest die letzten Kontext-Events aus `events.context.history` (neueste zuerst, limitierbar).
 
 ```json
 {
@@ -148,6 +156,7 @@ Schreibt bool auf `pvSurplusLoadStateId` wenn `watts >= pvSurplusMinWatts`.
 - `requireConfirmationActions` (default `executePlan`)
 - `comfortTemperatureStateId` (default `0_userdata.0.hvac.livingRoom.targetTemperature`)
 - `comfortTempStep` (default `1`)
+- `contextEventHistoryLimit` (default `50`)
 - `pvSurplusMinWatts` (default `1500`)
 - `pvSurplusLoadStateId` (default `0_userdata.0.energy.pvSurplusMode`)
 

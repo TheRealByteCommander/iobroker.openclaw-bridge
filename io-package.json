@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "news": {
+      "0.4.0": {
+        "en": "Add validatePlan dry-run checks and bounded context event history with getContextEvents",
+        "de": "validatePlan Dry-Run-Prüfung und begrenzte Kontext-Event-Historie mit getContextEvents ergänzt"
+      },
       "0.3.0": {
         "en": "Add conversational intent handling, context events, critical-action confirmation and PV surplus trigger",
         "de": "Conversational Intent-Handling, Kontext-Events, Bestätigung für kritische Aktionen und PV-Überschuss-Trigger ergänzt"
@@ -51,13 +55,14 @@
   },
   "native": {
     "allowedPrefixes": "javascript.0,0_userdata.0",
-    "allowedActions": "getState,setState,listStates,getStates,ping,handleIntent,executePlan,emitContextEvent,handlePvSurplus",
+    "allowedActions": "getState,setState,listStates,getStates,ping,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus",
     "commandTimeoutMs": 5000,
     "setStateAckAllowed": true,
     "criticalStatePrefixes": "system.,admin.0",
     "requireConfirmationActions": "executePlan",
     "comfortTemperatureStateId": "0_userdata.0.hvac.livingRoom.targetTemperature",
     "comfortTempStep": 1,
+    "contextEventHistoryLimit": 50,
     "pvSurplusMinWatts": 1500,
     "pvSurplusLoadStateId": "0_userdata.0.energy.pvSurplusMode"
   },
@@ -119,6 +124,19 @@
         "read": true,
         "write": false,
         "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "events.context.history",
+      "type": "state",
+      "common": {
+        "name": "Recent context events",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": "[]"
       },
       "native": {}
     },

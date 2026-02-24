@@ -20,6 +20,10 @@ class MockAdapter {
     this.states.set(id, { val: value, ack });
   }
 
+  async getStateAsync(id) {
+    return this.states.get(id) ?? null;
+  }
+
   async getForeignStateAsync(id) {
     return this.foreignStates.get(id) ?? null;
   }
@@ -202,4 +206,41 @@ test('handlePvSurplus activates surplus load when threshold is reached', async (
   assert.equal(response.ok, true);
   assert.equal(response.data.enabled, true);
   assert.equal(adapter.foreignStates.get('0_userdata.0.energy.pvSurplusMode').val, true);
+});
+
+test('validatePlan reports confirmation requirement for critical operations', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: '0_userdata.0,system',
+    allowedActions: 'validatePlan',
+    criticalStatePrefixes: 'system.',
+  });
+
+  const response = await bridge.processCommand({
+    action: 'validatePlan',
+    operations: [{ type: 'setState', id: 'system.adapter.admin.0.alive', value: false }],
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.data.valid, false);
+  assert.equal(response.data.checks[0].confirmationRequired, true);
+});
+
+test('getContextEvents returns recent event history in reverse order', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: '0_userdata.0',
+    allowedActions: 'emitContextEvent,getContextEvents',
+    contextEventHistoryLimit: 3,
+  });
+
+  await bridge.processCommand({ action: 'emitContextEvent', event: { type: 'habit', name: 'arrived_home' } });
+  await bridge.processCommand({ action: 'emitContextEvent', event: { type: 'habit', name: 'coffee_time' } });
+
+  const response = await bridge.processCommand({ action: 'getContextEvents', limit: 2 });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.data.events.length, 2);
+  assert.equal(response.data.events[0].name, 'coffee_time');
+  assert.equal(response.data.events[1].name, 'arrived_home');
 });
