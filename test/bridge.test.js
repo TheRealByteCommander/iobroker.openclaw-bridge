@@ -1,11 +1,11 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { BridgeRuntime, isAllowedId, normalizeConfig } = require('../lib/bridge');
+const { BridgeRuntime, isAllowedId, normalizeConfig, isCriticalId } = require('../lib/bridge');
 
 class MockAdapter {
   constructor(config = {}) {
-    this.version = '0.2.0';
+    this.version = '0.3.0';
     this.config = config;
     this.states = new Map();
     this.objects = new Map();
@@ -42,10 +42,16 @@ test('isAllowedId enforces prefix ACL', () => {
   assert.equal(isAllowedId('system.adapter.admin.0', ['javascript.0']), false);
 });
 
+test('isCriticalId marks critical prefixes', () => {
+  assert.equal(isCriticalId('system.adapter.admin.0.alive', ['system.']), true);
+  assert.equal(isCriticalId('0_userdata.0.safe', ['system.']), false);
+});
+
 test('normalizeConfig applies sane defaults', () => {
   const cfg = normalizeConfig({});
   assert.deepEqual(cfg.allowedPrefixes, ['javascript.0', '0_userdata.0']);
   assert.equal(cfg.commandTimeoutMs, 5000);
+  assert.equal(cfg.pvSurplusMinWatts, 1500);
 });
 
 test('processCommand supports request correlation and getState', async () => {
@@ -134,4 +140,66 @@ test('timeout handling returns structured ETIMEOUT', async () => {
   const response = await bridge.processCommand({ action: 'getState', id: '0_userdata.0.slow' });
   assert.equal(response.ok, false);
   assert.equal(response.error.code, 'ETIMEOUT');
+});
+
+test('handleIntent maps "mir ist kalt" to comfort operation', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: '0_userdata.0',
+    allowedActions: 'handleIntent',
+    comfortTemperatureStateId: '0_userdata.0.hvac.livingRoom.targetTemperature',
+    comfortTempStep: 1,
+  });
+
+  const response = await bridge.processCommand({
+    action: 'handleIntent',
+    text: 'Mir ist kalt',
+    currentTargetTemp: 21,
+    execute: false,
+  });
+
+  assert.equal(response.ok, true);
+  const ops = response.data.plan.operations;
+  assert.equal(ops.length, 1);
+  assert.equal(ops[0].id, '0_userdata.0.hvac.livingRoom.targetTemperature');
+  assert.equal(ops[0].value, 22);
+});
+
+test('executePlan blocks critical operation without confirmation', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: '0_userdata.0,system',
+    allowedActions: 'executePlan',
+    criticalStatePrefixes: 'system.',
+  });
+
+  const response = await bridge.processCommand({
+    action: 'executePlan',
+    operations: [{ type: 'setState', id: 'system.adapter.admin.0.alive', value: false }],
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.data.results[0].ok, false);
+  assert.equal(response.data.results[0].error.code, 'ECONFIRMREQUIRED');
+  assert.ok(adapter.states.get('safety.pendingConfirmation'));
+});
+
+test('handlePvSurplus activates surplus load when threshold is reached', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: '0_userdata.0',
+    allowedActions: 'handlePvSurplus',
+    pvSurplusLoadStateId: '0_userdata.0.energy.pvSurplusMode',
+    pvSurplusMinWatts: 1000,
+  });
+
+  const response = await bridge.processCommand({
+    action: 'handlePvSurplus',
+    watts: 1800,
+    confirmation: true,
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.data.enabled, true);
+  assert.equal(adapter.foreignStates.get('0_userdata.0.energy.pvSurplusMode').val, true);
 });

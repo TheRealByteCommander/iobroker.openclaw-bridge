@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "news": {
+      "0.3.0": {
+        "en": "Add conversational intent handling, context events, critical-action confirmation and PV surplus trigger",
+        "de": "Conversational Intent-Handling, Kontext-Events, Bestätigung für kritische Aktionen und PV-Überschuss-Trigger ergänzt"
+      },
       "0.2.0": {
         "en": "Add request correlation, structured errors, action whitelist, ACL checks, timeout handling, audit metrics and batch getStates",
         "de": "Request-Korrelation, strukturierte Fehler, Action-Whitelist, ACL-Prüfungen, Timeout-Handling, Audit-Metriken und batch getStates ergänzt"
@@ -47,9 +51,15 @@
   },
   "native": {
     "allowedPrefixes": "javascript.0,0_userdata.0",
-    "allowedActions": "getState,setState,listStates,getStates,ping",
+    "allowedActions": "getState,setState,listStates,getStates,ping,handleIntent,executePlan,emitContextEvent,handlePvSurplus",
     "commandTimeoutMs": 5000,
-    "setStateAckAllowed": true
+    "setStateAckAllowed": true,
+    "criticalStatePrefixes": "system.,admin.0",
+    "requireConfirmationActions": "executePlan",
+    "comfortTemperatureStateId": "0_userdata.0.hvac.livingRoom.targetTemperature",
+    "comfortTempStep": 1,
+    "pvSurplusMinWatts": 1500,
+    "pvSurplusLoadStateId": "0_userdata.0.energy.pvSurplusMode"
   },
   "objects": [
     {
@@ -83,6 +93,45 @@
       "type": "channel",
       "common": {
         "name": "Per-request responses"
+      },
+      "native": {}
+    },
+    {
+      "_id": "intents.lastPlan",
+      "type": "state",
+      "common": {
+        "name": "Last generated intent plan",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "events.context.last",
+      "type": "state",
+      "common": {
+        "name": "Last context event",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "safety.pendingConfirmation",
+      "type": "state",
+      "common": {
+        "name": "Pending safety confirmation",
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "def": ""
       },
       "native": {}
     },

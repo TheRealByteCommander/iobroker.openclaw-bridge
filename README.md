@@ -1,135 +1,189 @@
 # ioBroker OpenClaw Bridge
 
-Bridge-Adapter, um OpenClaw kontrolliert mit ioBroker-States interagieren zu lassen.
+Produktionsnahe Interface-Schicht zwischen OpenClaw (Conversational Agent) und ioBroker.
 
-## Version 0.2.0 – neue Features
+## 1) Repo-Analyse (Stack & Module)
 
-1. **Request/Response-Correlation** via `requestId` + per-request State unter `responses.<requestId>`
-2. **Action-Whitelist** (`native.allowedActions`) gegen unerwünschte Befehle
-3. **Timeout-Handling** (`native.commandTimeoutMs`) mit strukturiertem `ETIMEOUT`
-4. **Strukturierte Fehlerobjekte** (`error.code`, `error.message`, `error.details`)
-5. **Audit-/Metrik-States** unter `info.*` (Counts, letzte Action, Dauer, Fehler)
-6. **Ping/Health-Action** (`ping`) für schnelle Erreichbarkeitsprüfung
-7. **Batch Read** via `getStates` für mehrere State-IDs in einem Request
-8. **Prefix-ACL + Ack-Policy** für `getState`/`setState`/`getStates`
+- **Stack:** Node.js (CommonJS), ioBroker Adapter Core (`@iobroker/adapter-core`), Node Test Runner (`node --test`)
+- **Adapter-Typ:** Daemon/Misc-Data
+- **Kernmodule:**
+  - `main.js` – ioBroker Adapter Lifecycle
+  - `lib/bridge.js` – Command Gateway, ACL, Safety, Intent/Context/PV-Logik
+  - `test/bridge.test.js` – Unit-/Logiktests
 
-## Kommunikations-States
+## 2) OpenClaw ↔ ioBroker Interface
 
-- `openclaw-bridge.0.control.command` (write JSON command)
-- `openclaw-bridge.0.control.lastResult` (last JSON response)
-- `openclaw-bridge.0.responses.<requestId>` (response pro Request)
-- `openclaw-bridge.0.info.*` (Audit- und Health-Metriken)
+### Kommunikationskanäle (States)
 
-## Native-Konfiguration
+- `control.command` *(write)*: JSON-Request von OpenClaw
+- `control.lastResult` *(read)*: letzte JSON-Response
+- `responses.<requestId>` *(read)*: korrelierte Response pro Request
+- `info.*`: Audit/Health Metriken
+- `intents.lastPlan`: letzter Intent-Plan
+- `events.context.last`: letztes Context/Habit/Event
+- `safety.pendingConfirmation`: gepufferte kritische Aktion
 
-- `allowedPrefixes` (CSV, default: `javascript.0,0_userdata.0`)
-- `allowedActions` (CSV, default: `getState,setState,listStates,getStates,ping`)
-- `commandTimeoutMs` (default: `5000`)
-- `setStateAckAllowed` (default: `true`)
-
-## Command-Schema
+### Request-Schema
 
 ```json
 {
-  "requestId": "optional-client-id",
-  "action": "getState | setState | listStates | getStates | ping",
-  "id": "state-id (für getState/setState)",
-  "ids": ["state-id-1", "state-id-2"],
-  "value": "any (für setState)",
-  "ack": false
+  "requestId": "optional",
+  "action": "getState | setState | listStates | getStates | ping | handleIntent | executePlan | emitContextEvent | handlePvSurplus"
 }
 ```
 
-## Response-Schema
+### Sicherheits- und Policy-Prinzipien
+
+1. **Prefix ACL** über `allowedPrefixes`
+2. **Action-Whitelist** über `allowedActions`
+3. **Kritische Präfixe** über `criticalStatePrefixes`
+4. **Bestätigungszwang** für kritische Operationen (`ECONFIRMREQUIRED`)
+5. **Ack-Policy** über `setStateAckAllowed`
+6. **Timeout + strukturierte Fehler**
+
+## 3) Intent/Context/Habit/PV/Komfort
+
+### `handleIntent`
+
+Parst natürliche Sprache und erzeugt einen ausführbaren Plan (`operations[]`) plus Kontext-Events.
+
+**Beispiel (Komfort):**
 
 ```json
 {
-  "ok": true,
-  "requestId": "req-123",
-  "action": "getState",
-  "data": {},
-  "durationMs": 3
+  "requestId": "intent-1",
+  "action": "handleIntent",
+  "text": "mir ist kalt",
+  "currentTargetTemp": 21,
+  "execute": true,
+  "confirmation": true
 }
 ```
 
-Fehlerfall:
+Ergebnis: Plan mit `setState` auf `comfortTemperatureStateId` (+ `comfortTempStep`) und Context Event `user_feels_cold`.
+
+### `emitContextEvent`
+
+Schreibt strukturierte Kontext-/Habit-Events.
 
 ```json
 {
-  "ok": false,
-  "requestId": "req-123",
-  "action": "setState",
-  "error": {
-    "code": "EIDFORBIDDEN",
-    "message": "state id is not allowed: system.adapter.admin.0.alive",
-    "details": null
-  },
-  "durationMs": 2
+  "action": "emitContextEvent",
+  "event": {
+    "type": "habit",
+    "name": "arrived_home",
+    "confidence": 0.88
+  }
 }
 ```
 
-## Beispiele
+### `executePlan`
 
-### getState
+Führt Plan-Operationen aus (`setState`). Kritische IDs benötigen explizite Bestätigung.
 
 ```json
 {
-  "requestId": "r1",
-  "action": "getState",
-  "id": "0_userdata.0.test"
+  "action": "executePlan",
+  "confirmation": true,
+  "operations": [
+    {
+      "type": "setState",
+      "id": "0_userdata.0.light.livingroom",
+      "value": true,
+      "ack": false,
+      "reason": "intent.turn_on_light"
+    }
+  ]
 }
 ```
 
-### getStates (Batch)
+### `handlePvSurplus`
+
+Ermittelt anhand aktueller PV-Leistung, ob ein Überschuss-Modus aktiviert wird.
 
 ```json
 {
-  "requestId": "r2",
-  "action": "getStates",
-  "ids": ["0_userdata.0.a", "0_userdata.0.b"]
+  "action": "handlePvSurplus",
+  "watts": 1850,
+  "confirmation": true
 }
 ```
 
-### setState
+Schreibt bool auf `pvSurplusLoadStateId` wenn `watts >= pvSurplusMinWatts`.
+
+## 4) Beispiel-Datenfluss (natürlicher Dialog)
+
+1. User: **„Mir ist kalt.“**
+2. OpenClaw → `handleIntent`
+3. Bridge erzeugt Plan: Temperatur +1°C, Event `user_feels_cold`
+4. Bei `execute=true`: Bridge führt Plan aus (Policy/Safety geprüft)
+5. Response unter `responses.<requestId>` + Audit in `info.*`
+
+## 5) Erweiterbarkeit
+
+- Neue Intents im `buildIntentPlan()` ergänzen
+- Plan-Operationen (z. B. Dimmwerte, Szenen) via `executePlan` erweitern
+- Weitere Safety-Layer: Zeitfenster, MFA-Tokens, Rollenmapping
+- Context-Pipeline an externe ML/NLU Komponenten andockbar
+
+## 6) Setup
+
+1. Adapter installieren/klonen
+2. Instanz `openclaw-bridge.0` starten
+3. Native-Config setzen:
+   - `allowedPrefixes`
+   - `allowedActions`
+   - `criticalStatePrefixes`
+   - `comfortTemperatureStateId`
+   - `pvSurplusLoadStateId`
+4. OpenClaw sendet Requests als JSON in `control.command`
+
+## 7) Native-Konfiguration
+
+- `allowedPrefixes` (CSV, default `javascript.0,0_userdata.0`)
+- `allowedActions` (CSV)
+- `commandTimeoutMs` (default `5000`)
+- `setStateAckAllowed` (default `true`)
+- `criticalStatePrefixes` (default `system.,admin.0`)
+- `requireConfirmationActions` (default `executePlan`)
+- `comfortTemperatureStateId` (default `0_userdata.0.hvac.livingRoom.targetTemperature`)
+- `comfortTempStep` (default `1`)
+- `pvSurplusMinWatts` (default `1500`)
+- `pvSurplusLoadStateId` (default `0_userdata.0.energy.pvSurplusMode`)
+
+## 8) Tests
+
+```bash
+npm test
+```
+
+Abgedeckt:
+
+- ACL/Action-Whitelist
+- Timeout/Fehlerstruktur
+- Request-Korrelation
+- Intent-Mapping („mir ist kalt“)
+- Safety-Confirmation für kritische Aktionen
+- PV-Überschuss-Trigger
+
+## 9) Referenz-API für OpenClaw-Integration
+
+Empfohlenes OpenClaw Tooling-Schema:
 
 ```json
 {
-  "requestId": "r3",
-  "action": "setState",
-  "id": "0_userdata.0.switch",
-  "value": true,
-  "ack": false
+  "tool": "iobroker_bridge_command",
+  "input": {
+    "requestId": "uuid",
+    "action": "handleIntent",
+    "text": "mir ist kalt",
+    "execute": true,
+    "confirmation": true
+  }
 }
 ```
 
-### listStates
+Polling/Antwort:
 
-```json
-{
-  "requestId": "r4",
-  "action": "listStates"
-}
-```
-
-### ping
-
-```json
-{
-  "requestId": "r5",
-  "action": "ping"
-}
-```
-
-## Tests
-
-- Unit-/Logiktests mit Node Test Runner (`node --test`)
-- Enthalten: ACL-Checks, Action-Whitelist, Ack-Policy, Request-Korrelation, Batch-Read, Timeout-Handling
-
-## Kurz-Recherche (Grundlage)
-
-- ioBroker Dev Docs – State Roles (`common.role`) und saubere Objektmodellierung:  
-  https://iobroker.github.io/dev-docs/concepts/02-state-roles/
-- ioBroker Create-Adapter (offizielles Tooling/Struktur):  
-  https://github.com/ioBroker/create-adapter
-- ioBroker Testing Utilities (Teststrategien, Integration/Unit-Mocks):  
-  https://github.com/ioBroker/testing
+- primär `responses.<requestId>`
+- fallback `control.lastResult`
