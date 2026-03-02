@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.4.0",
+    "version": "0.6.0",
     "news": {
       "0.4.0": {
         "en": "Add validatePlan dry-run checks and bounded context event history with getContextEvents",
@@ -18,6 +18,14 @@
       "0.1.0": {
         "en": "Initial MVP bridge for ioBroker state read/write from OpenClaw workflows",
         "de": "Initiales MVP-Bridge für ioBroker State-Read/Write aus OpenClaw-Workflows"
+      },
+      "0.5.0": {
+        "en": "Add operator help action, error nextAction guidance and setup/troubleshooting UX docs",
+        "de": "Operator-Hilfeaktion, nextAction-Fehlerhinweise und Setup/Troubleshooting-UX-Dokumentation ergänzt"
+      },
+      "0.6.0": {
+        "en": "Add batchSetStates, syncSnapshot, telemetry action, retry/backoff reliability and queue high-watermark protection",
+        "de": "batchSetStates, syncSnapshot, Telemetrie-Action, Retry/Backoff-Reliability und Queue-High-Watermark-Schutz ergänzt"
       }
     },
     "titleLang": {
@@ -55,7 +63,7 @@
   },
   "native": {
     "allowedPrefixes": "javascript.0,0_userdata.0",
-    "allowedActions": "getState,setState,listStates,getStates,ping,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus",
+    "allowedActions": "getState,setState,listStates,getStates,ping,help,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus,batchSetStates,syncSnapshot,getTelemetry",
     "commandTimeoutMs": 5000,
     "setStateAckAllowed": true,
     "criticalStatePrefixes": "system.,admin.0",
@@ -64,7 +72,11 @@
     "comfortTempStep": 1,
     "contextEventHistoryLimit": 50,
     "pvSurplusMinWatts": 1500,
-    "pvSurplusLoadStateId": "0_userdata.0.energy.pvSurplusMode"
+    "pvSurplusLoadStateId": "0_userdata.0.energy.pvSurplusMode",
+    "retryAttempts": 3,
+    "retryBackoffMs": 100,
+    "maxBatchOperations": 25,
+    "queueHighWatermark": 100
   },
   "objects": [
     {

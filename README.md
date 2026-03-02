@@ -28,7 +28,7 @@ Produktionsnahe Interface-Schicht zwischen OpenClaw (Conversational Agent) und i
 ```json
 {
   "requestId": "optional",
-  "action": "getState | setState | listStates | getStates | ping | handleIntent | executePlan | validatePlan | emitContextEvent | getContextEvents | handlePvSurplus"
+  "action": "getState | setState | listStates | getStates | ping | help | handleIntent | executePlan | validatePlan | emitContextEvent | getContextEvents | handlePvSurplus"
 }
 ```
 
@@ -160,7 +160,23 @@ Schreibt bool auf `pvSurplusLoadStateId` wenn `watts >= pvSurplusMinWatts`.
 - `pvSurplusMinWatts` (default `1500`)
 - `pvSurplusLoadStateId` (default `0_userdata.0.energy.pvSurplusMode`)
 
-## 8) Tests
+
+## 8) UX-orientierte Verbesserungen (2026-03-02)
+
+1. **Command-Semantik klarer (`help`)**
+   - Neue Action `help` liefert erlaubte Actions, Safety-Kontext und QuickStart-Beispiele.
+
+2. **Sicherere Confirmation-Flows**
+   - Bei kritischen Aktionen enthält `safety.pendingConfirmation` nun `nextAction`, damit Operatoren nicht raten müssen.
+
+3. **Fehler besser bedienbar**
+   - Strukturierte Fehler enthalten jetzt `nextAction` (operator-guided recovery).
+
+4. **Dokumentation für Setup/Troubleshooting**
+   - `docs/OPERATOR_SETUP_FLOW.md`
+   - `docs/TROUBLESHOOTING.md`
+
+## 9) Tests
 
 ```bash
 npm test
@@ -175,7 +191,7 @@ Abgedeckt:
 - Safety-Confirmation für kritische Aktionen
 - PV-Überschuss-Trigger
 
-## 9) Referenz-API für OpenClaw-Integration
+## 10) Referenz-API für OpenClaw-Integration
 
 Empfohlenes OpenClaw Tooling-Schema:
 
@@ -196,3 +212,25 @@ Polling/Antwort:
 
 - primär `responses.<requestId>`
 - fallback `control.lastResult`
+
+
+## New Engineering Capabilities (2026-03-02)
+
+- `batchSetStates`: execute bounded batched set-state operations.
+- `syncSnapshot`: fetch current allowed-prefix state snapshot.
+- `getTelemetry`: runtime metrics (`counts`, `queueDepth`, `avgDurationMs`, `uptimeMs`).
+- Retry/backoff for adapter read/write operations.
+- Queue high-watermark guard with explicit `EQUEUEFULL` error.
+- Extended comfort intent routing (`mir ist heiß` / `mir ist kalt`).
+
+### Example: batch set
+```json
+{
+  "action": "batchSetStates",
+  "confirmation": true,
+  "operations": [
+    { "type": "setState", "id": "0_userdata.0.light.a", "value": true },
+    { "type": "setState", "id": "0_userdata.0.light.b", "value": false }
+  ]
+}
+```
