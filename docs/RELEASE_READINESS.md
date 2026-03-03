@@ -17,3 +17,5 @@
 ## Known risks
 - Queue/telemetry are in-memory (reset on adapter restart).
 - For HA persistence, external metrics export should be added in future sprint.
+
+- Alexa TTS speak action

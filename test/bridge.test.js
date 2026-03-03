@@ -198,3 +198,29 @@ test('help action returns capabilities', async () => {
   assert.equal(Array.isArray(response.data.allowedActions), true);
   assert.equal(response.data.adapter, 'openclaw-bridge');
 });
+
+
+test('speak action writes alexa tts state', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: 'alexa2.0,0_userdata.0',
+    allowedActions: 'speak',
+    alexaTtsStateId: 'alexa2.0.echo.speak',
+  });
+
+  const response = await bridge.processCommand({ action: 'speak', text: 'Hallo Wohnzimmer' });
+  assert.equal(response.ok, true);
+  assert.equal(adapter.foreignStates.get('alexa2.0.echo.speak').val, 'Hallo Wohnzimmer');
+});
+
+test('transcribe negative path requires audioPath', async () => {
+  const adapter = new MockAdapter({});
+  const bridge = new BridgeRuntime(adapter, {
+    allowedPrefixes: '0_userdata.0',
+    allowedActions: 'transcribe',
+  });
+
+  const response = await bridge.processCommand({ action: 'transcribe' });
+  assert.equal(response.ok, false);
+  assert.equal(response.error.code, 'EBADREQUEST');
+});

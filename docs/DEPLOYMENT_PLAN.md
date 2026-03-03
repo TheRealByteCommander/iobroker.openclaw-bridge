@@ -28,3 +28,5 @@ Run representative commands via `control.command`:
 ## 4. Rollback
 - Revert to previous git tag/commit.
 - Restart adapter instance.
+
+- voiceCommand

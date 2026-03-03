@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.6.0",
+    "version": "0.8.0",
     "news": {
       "0.4.0": {
         "en": "Add validatePlan dry-run checks and bounded context event history with getContextEvents",
@@ -26,6 +26,10 @@
       "0.6.0": {
         "en": "Add batchSetStates, syncSnapshot, telemetry action, retry/backoff reliability and queue high-watermark protection",
         "de": "batchSetStates, syncSnapshot, Telemetrie-Action, Retry/Backoff-Reliability und Queue-High-Watermark-Schutz ergänzt"
+      },
+      "0.8.0": {
+        "en": "Add Alexa speak action, local STT transcribe action and end-to-end voiceCommand routing with guardrails",
+        "de": "Alexa speak Action, lokale STT transcribe Action und End-to-End voiceCommand Routing mit Guardrails ergänzt"
       }
     },
     "titleLang": {
@@ -62,8 +66,8 @@
     }
   },
   "native": {
-    "allowedPrefixes": "javascript.0,0_userdata.0",
-    "allowedActions": "getState,setState,listStates,getStates,ping,help,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus,batchSetStates,syncSnapshot,getTelemetry",
+    "allowedPrefixes": "javascript.0,0_userdata.0,alexa2.0",
+    "allowedActions": "getState,setState,listStates,getStates,ping,help,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus,batchSetStates,syncSnapshot,getTelemetry,speak,transcribe,voiceCommand",
     "commandTimeoutMs": 5000,
     "setStateAckAllowed": true,
     "criticalStatePrefixes": "system.,admin.0",
@@ -76,7 +80,11 @@
     "retryAttempts": 3,
     "retryBackoffMs": 100,
     "maxBatchOperations": 25,
-    "queueHighWatermark": 100
+    "queueHighWatermark": 100,
+    "alexaTtsStateId": "alexa2.0.Echo-Devices.Speak",
+    "sttCommand": "faster-whisper",
+    "sttModel": "small",
+    "sttLanguage": "de"
   },
   "objects": [
     {
