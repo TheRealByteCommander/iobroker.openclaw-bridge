@@ -134,6 +134,66 @@ Schreibt bool auf `pvSurplusLoadStateId` wenn `watts >= pvSurplusMinWatts`.
 - Weitere Safety-Layer: Zeitfenster, MFA-Tokens, Rollenmapping
 - Context-Pipeline an externe ML/NLU Komponenten andockbar
 
+
+## Quickstart: Alexa TTS + lokale STT
+
+### Ziel
+In 5 Minuten lauffähiger Operator-Flow: **STT-Text rein → Intent prüfen → sicher ausführen → Alexa spricht Feedback**.
+
+### 1) Basis-Check
+```json
+{ "action": "ping" }
+```
+
+```json
+{ "action": "help" }
+```
+
+### 2) STT Text in Bridge geben (Dry-Run)
+```json
+{
+  "action": "handleIntent",
+  "text": "mir ist kalt",
+  "execute": false
+}
+```
+
+### 3) Plan validieren
+```json
+{
+  "action": "validatePlan",
+  "confirmation": false,
+  "operations": [
+    { "type": "setState", "id": "0_userdata.0.hvac.livingRoom.targetTemperature", "value": 22 }
+  ]
+}
+```
+
+### 4) Sicher ausführen
+```json
+{
+  "action": "executePlan",
+  "confirmation": true,
+  "operations": [
+    { "type": "setState", "id": "0_userdata.0.hvac.livingRoom.targetTemperature", "value": 22 }
+  ]
+}
+```
+
+### 5) Alexa TTS Feedback
+```json
+{
+  "action": "setState",
+  "id": "alexa2.0.Echo_Living.speak",
+  "value": "Die Temperatur wurde angepasst.",
+  "ack": false
+}
+```
+
+Für vollständige Operator-Flows und Troubleshooting siehe:
+- `docs/ALEXA_TTS_STT_INTEGRATION.md`
+- `docs/TROUBLESHOOTING.md`
+
 ## 6) Setup
 
 1. Adapter installieren/klonen
@@ -234,3 +294,13 @@ Polling/Antwort:
   ]
 }
 ```
+
+
+## Voice I/O (Alexa + local STT)
+
+New actions:
+- `speak` – writes TTS text to configured Alexa speak state
+- `transcribe` – local STT command wrapper for an audio file
+- `voiceCommand` – end-to-end: transcribe -> intent -> optional execution -> optional speak
+
+See: `docs/ALEXA_TTS_STT_INTEGRATION.md`
