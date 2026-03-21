@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "news": {
       "0.4.0": {
         "en": "Add validatePlan dry-run checks and bounded context event history with getContextEvents",
@@ -34,6 +34,10 @@
       "0.8.1": {
         "en": "Add Admin JSONConfig UI for adapter settings (ACL, safety, timeouts, voice).",
         "de": "Admin-JSONConfig-UI für Adapter-Einstellungen ergänzt (ACL, Safety, Timeouts, Voice)."
+      },
+      "0.8.2": {
+        "en": "Ensure control.command state is auto-created on startup to fix missing command object after install.",
+        "de": "Stellt sicher, dass control.command beim Start automatisch angelegt wird, um fehlende Command-Objekte nach Installation zu beheben."
       }
     },
     "titleLang": {
