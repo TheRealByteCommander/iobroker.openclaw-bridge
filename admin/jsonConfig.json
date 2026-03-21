@@ -197,6 +197,70 @@
       "lg": 3
     },
 
+    "headerAutoShade": {
+      "type": "header",
+      "text": "Auto-Beschattung (Sonne)"
+    },
+    "sunAzimuthStateId": {
+      "type": "text",
+      "label": "Sonnen-Azimut State-ID",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "sunAltitudeStateId": {
+      "type": "text",
+      "label": "Sonnen-Höhe State-ID",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "sunNoonAltitudeStateId": {
+      "type": "text",
+      "label": "Solarnoon-Höhe State-ID (Saisonfaktor)",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "eastShutterStateId": {
+      "type": "text",
+      "label": "Ost-Rollo State-ID",
+      "newLine": true,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+    "southShutterStateId": {
+      "type": "text",
+      "label": "Süd-Rollo State-ID",
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+    "westShutterStateId": {
+      "type": "text",
+      "label": "West-Rollo State-ID",
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+    "shadingMinAltitude": {
+      "type": "number",
+      "label": "Mindest-Sonnenhöhe für Beschattung (°)",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "newLine": true,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
+
     "headerVoice": {
       "type": "header",
       "text": "Voice (Alexa + STT)"
