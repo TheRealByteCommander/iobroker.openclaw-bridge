@@ -1,0 +1,199 @@
+{
+  "i18n": true,
+  "type": "panel",
+  "items": {
+    "headerGeneral": {
+      "type": "header",
+      "text": "Allgemein"
+    },
+    "allowedPrefixes": {
+      "type": "text",
+      "label": "Erlaubte State-Präfixe (CSV)",
+      "help": "Beispiel: javascript.0,0_userdata.0,alexa2.0",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "allowedActions": {
+      "type": "text",
+      "label": "Erlaubte Actions (CSV)",
+      "help": "Whitelist der Bridge-Commands",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "commandTimeoutMs": {
+      "type": "number",
+      "label": "Command Timeout (ms)",
+      "min": 500,
+      "max": 60000,
+      "step": 100,
+      "newLine": true,
+      "sm": 6,
+      "md": 4,
+      "lg": 3
+    },
+    "setStateAckAllowed": {
+      "type": "checkbox",
+      "label": "setState mit ack=true erlauben",
+      "newLine": false,
+      "sm": 6,
+      "md": 4,
+      "lg": 3
+    },
+
+    "headerSafety": {
+      "type": "header",
+      "text": "Safety"
+    },
+    "criticalStatePrefixes": {
+      "type": "text",
+      "label": "Kritische Präfixe (CSV)",
+      "help": "Beispiel: system.,admin.0",
+      "newLine": true,
+      "sm": 12,
+      "md": 6,
+      "lg": 6
+    },
+    "requireConfirmationActions": {
+      "type": "text",
+      "label": "Actions mit Bestätigungspflicht (CSV)",
+      "help": "Beispiel: executePlan",
+      "newLine": false,
+      "sm": 12,
+      "md": 6,
+      "lg": 6
+    },
+
+    "headerComfortPv": {
+      "type": "header",
+      "text": "Komfort & PV"
+    },
+    "comfortTemperatureStateId": {
+      "type": "text",
+      "label": "Komfort-Temperatur State-ID",
+      "newLine": true,
+      "sm": 12,
+      "md": 8,
+      "lg": 8
+    },
+    "comfortTempStep": {
+      "type": "number",
+      "label": "Komfort-Temperatur Schrittweite",
+      "min": 0.1,
+      "max": 5,
+      "step": 0.1,
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+    "pvSurplusLoadStateId": {
+      "type": "text",
+      "label": "PV-Überschuss Ziel-State-ID",
+      "newLine": true,
+      "sm": 12,
+      "md": 8,
+      "lg": 8
+    },
+    "pvSurplusMinWatts": {
+      "type": "number",
+      "label": "PV-Überschuss Schwellwert (W)",
+      "min": 0,
+      "max": 50000,
+      "step": 50,
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+
+    "headerReliability": {
+      "type": "header",
+      "text": "Reliability"
+    },
+    "retryAttempts": {
+      "type": "number",
+      "label": "Retry-Versuche",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "newLine": true,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
+    "retryBackoffMs": {
+      "type": "number",
+      "label": "Retry Backoff (ms)",
+      "min": 0,
+      "max": 10000,
+      "step": 50,
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
+    "maxBatchOperations": {
+      "type": "number",
+      "label": "Max Batch-Operationen",
+      "min": 1,
+      "max": 500,
+      "step": 1,
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
+    "queueHighWatermark": {
+      "type": "number",
+      "label": "Queue High-Watermark",
+      "min": 1,
+      "max": 5000,
+      "step": 1,
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
+
+    "headerVoice": {
+      "type": "header",
+      "text": "Voice (Alexa + STT)"
+    },
+    "alexaTtsStateId": {
+      "type": "text",
+      "label": "Alexa TTS State-ID",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "sttCommand": {
+      "type": "text",
+      "label": "STT Kommando",
+      "newLine": true,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+    "sttModel": {
+      "type": "text",
+      "label": "STT Modell",
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    },
+    "sttLanguage": {
+      "type": "text",
+      "label": "STT Sprache",
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 4
+    }
+  }
+}

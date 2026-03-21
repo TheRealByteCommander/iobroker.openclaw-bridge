@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "news": {
       "0.4.0": {
         "en": "Add validatePlan dry-run checks and bounded context event history with getContextEvents",
@@ -30,6 +30,10 @@
       "0.8.0": {
         "en": "Add Alexa speak action, local STT transcribe action and end-to-end voiceCommand routing with guardrails",
         "de": "Alexa speak Action, lokale STT transcribe Action und End-to-End voiceCommand Routing mit Guardrails ergänzt"
+      },
+      "0.8.1": {
+        "en": "Add Admin JSONConfig UI for adapter settings (ACL, safety, timeouts, voice).",
+        "de": "Admin-JSONConfig-UI für Adapter-Einstellungen ergänzt (ACL, Safety, Timeouts, Voice)."
       }
     },
     "titleLang": {
@@ -62,7 +66,7 @@
     "dataSource": "push",
     "compact": true,
     "adminUI": {
-      "config": "none"
+      "config": "json"
     }
   },
   "native": {
