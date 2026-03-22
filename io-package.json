@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "openclaw-bridge",
-    "version": "0.8.4",
+    "version": "0.9.0",
     "news": {
       "0.4.0": {
         "en": "Add validatePlan dry-run checks and bounded context event history with getContextEvents",
@@ -46,6 +46,10 @@
       "0.8.4": {
         "en": "Add dynamic sun-angle auto shading (season-aware) for east/south/west shutters with policy lock at position 0.",
         "de": "Dynamische, jahreszeitabhängige Beschattung nach Sonnenwinkel für Ost/Süd/West-Rollos ergänzt, inkl. Policy-Sperre bei Position 0."
+      },
+      "0.9.0": {
+        "en": "Added home-automation policy controls (quiet hours, blocked shutters, glare-gated auto shade) and new policyStatus action.",
+        "de": "Hausautomations-Policies ergänzt (Ruhezeiten, gesperrte Rollos, Blendungs-Gating für AutoShade) sowie neue Action policyStatus."
       }
     },
     "titleLang": {
@@ -83,7 +87,7 @@
   },
   "native": {
     "allowedPrefixes": "javascript.0,0_userdata.0,alexa2.0",
-    "allowedActions": "getState,setState,listStates,getStates,ping,help,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus,batchSetStates,syncSnapshot,getTelemetry,speak,transcribe,voiceCommand,autoShade",
+    "allowedActions": "getState,setState,listStates,getStates,ping,help,handleIntent,executePlan,validatePlan,emitContextEvent,getContextEvents,handlePvSurplus,batchSetStates,syncSnapshot,getTelemetry,speak,transcribe,voiceCommand,autoShade,policyStatus",
     "commandTimeoutMs": 5000,
     "setStateAckAllowed": true,
     "criticalStatePrefixes": "system.,admin.0",
@@ -110,7 +114,14 @@
     "westShutterStateId": "sonoff.0.Rollo-4.Shutter1_Position",
     "southShutterStateId": "sonoff.0.Rollo-6 Stube.Shutter1_Position",
     "eastShutterStateId": "sonoff.0.Rollo-7.Shutter1_Position",
-    "shadingMinAltitude": 8
+    "shadingMinAltitude": 8,
+    "blockedShutterStateIds": "sonoff.0.Rollo-5.Shutter1_Position,sonoff.0.Rollo-5.SHUTTER1",
+    "frontSunGlareStateId": "0_userdata.0.vision.front.sunGlare",
+    "backSunGlareStateId": "0_userdata.0.vision.back.sunGlare",
+    "requireBackGlareForAutoShade": true,
+    "disableAutomationAtNight": true,
+    "quietHoursStart": 20,
+    "quietHoursEnd": 8
   },
   "objects": [
     {

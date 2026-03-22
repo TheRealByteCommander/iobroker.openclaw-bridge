@@ -260,6 +260,69 @@
       "md": 4,
       "lg": 3
     },
+    "frontSunGlareStateId": {
+      "type": "text",
+      "label": "Front-SunGlare State-ID (Bestätigung)",
+      "newLine": true,
+      "sm": 12,
+      "md": 6,
+      "lg": 6
+    },
+    "backSunGlareStateId": {
+      "type": "text",
+      "label": "Back-SunGlare State-ID (Hauptindikator)",
+      "newLine": false,
+      "sm": 12,
+      "md": 6,
+      "lg": 6
+    },
+    "requireBackGlareForAutoShade": {
+      "type": "checkbox",
+      "label": "AutoShade nur bei backSunGlare=true",
+      "newLine": true,
+      "sm": 12,
+      "md": 6,
+      "lg": 6
+    },
+    "disableAutomationAtNight": {
+      "type": "checkbox",
+      "label": "Nachts keine automatische Beschattung",
+      "newLine": false,
+      "sm": 12,
+      "md": 6,
+      "lg": 6
+    },
+    "blockedShutterStateIds": {
+      "type": "text",
+      "label": "Gesperrte Rollo-State-IDs (CSV)",
+      "help": "z.B. sonoff.0.Rollo-5.Shutter1_Position,sonoff.0.Rollo-5.SHUTTER1",
+      "newLine": true,
+      "sm": 12,
+      "md": 12,
+      "lg": 12
+    },
+    "quietHoursStart": {
+      "type": "number",
+      "label": "Ruhezeit Start (Stunde)",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "newLine": true,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
+    "quietHoursEnd": {
+      "type": "number",
+      "label": "Ruhezeit Ende (Stunde)",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "newLine": false,
+      "sm": 12,
+      "md": 4,
+      "lg": 3
+    },
 
     "headerVoice": {
       "type": "header",
