@@ -1,0 +1,39 @@
+{
+  "openclaw-bridge": {
+    "name": "openclaw-bridge",
+    "version": "0.9.0",
+    "type": "adapter",
+    "titleLang": {
+      "en": "OpenClaw Bridge",
+      "de": "OpenClaw Bridge"
+    },
+    "desc": {
+      "en": "Bridge adapter exposing command and result states for external assistants",
+      "de": "Bridge-Adapter mit Command- und Result-States für externe Assistenten"
+    },
+    "authors": [
+      "Byte Commander"
+    ],
+    "keywords": [
+      "openclaw",
+      "bridge",
+      "assistant",
+      "home automation",
+      "policy"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "icon": "openclaw-bridge.png",
+    "extIcon": "https://raw.githubusercontent.com/TheRealByteCommander/iobroker.openclaw-bridge/master/admin/openclaw-bridge.png",
+    "readme": "https://github.com/TheRealByteCommander/iobroker.openclaw-bridge/blob/master/README.md",
+    "url": "https://github.com/TheRealByteCommander/iobroker.openclaw-bridge/archive/refs/heads/master.tar.gz",
+    "meta": "https://raw.githubusercontent.com/TheRealByteCommander/iobroker.openclaw-bridge/master/repo/sources-dist.json",
+    "support": "https://github.com/TheRealByteCommander/iobroker.openclaw-bridge/issues",
+    "news": {
+      "0.9.0": {
+        "en": "Added home-automation policy controls (quiet hours, blocked shutters, glare-gated auto shade) and new policyStatus action.",
+        "de": "Hausautomations-Policies ergänzt (Ruhezeiten, gesperrte Rollos, Blendungs-Gating für AutoShade) sowie neue Action policyStatus."
+      }
+    }
+  }
+}

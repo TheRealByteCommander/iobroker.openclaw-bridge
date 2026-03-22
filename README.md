@@ -196,15 +196,33 @@ Für vollständige Operator-Flows und Troubleshooting siehe:
 
 ## 6) Setup
 
-1. Adapter installieren/klonen
-2. Instanz `openclaw-bridge.0` starten
-3. Native-Config setzen:
+### A) Direktinstallation (manuell)
+
+```bash
+iobroker url https://github.com/TheRealByteCommander/iobroker.openclaw-bridge --host ioBroker --debug
+```
+
+### B) Custom Repository (Update-fähig im Admin)
+
+1. In ioBroker Admin unter `Einstellungen -> Repositories` diese URL hinzufügen:
+   ```text
+   https://raw.githubusercontent.com/TheRealByteCommander/iobroker.openclaw-bridge/master/repo/sources-dist.json
+   ```
+2. Repository aktualisieren.
+3. Adapter normal über Admin installieren/aktualisieren.
+
+Details: `repo/README-CUSTOM-REPO.md`
+
+### C) Laufzeit-Konfiguration
+
+1. Instanz `openclaw-bridge.0` starten
+2. Native-Config setzen:
    - `allowedPrefixes`
    - `allowedActions`
    - `criticalStatePrefixes`
    - `comfortTemperatureStateId`
    - `pvSurplusLoadStateId`
-4. OpenClaw sendet Requests als JSON in `control.command`
+3. OpenClaw sendet Requests als JSON in `control.command`
 
 ## 7) Native-Konfiguration
 
@@ -218,6 +236,11 @@ Für vollständige Operator-Flows und Troubleshooting siehe:
 - `comfortTempStep` (default `1`)
 - `contextEventHistoryLimit` (default `50`)
 - `pvSurplusMinWatts` (default `1500`)
+- `blockedShutterStateIds` (CSV, default enthält Rollo 5)
+- `frontSunGlareStateId` / `backSunGlareStateId`
+- `requireBackGlareForAutoShade` (default `true`)
+- `disableAutomationAtNight` (default `true`)
+- `quietHoursStart` / `quietHoursEnd` (default `20` / `8`)
 - `pvSurplusLoadStateId` (default `0_userdata.0.energy.pvSurplusMode`)
 
 
